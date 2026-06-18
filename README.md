@@ -1,0 +1,2 @@
+# Projet-Stage-d-t-2026---D-veloppement-d-un-assistant-IA-
+Il s'agit d'un assistant IA capable d'interroger simultanément plusieurs types de documents techniques: PDF, images, diagrammes UML et captures d'écran. La solution reposera sur une architecture RAG multimodale. Le développement sera réalisé avec backend Python, un frontend Angular, LlamaIndex pour l'orchestration RAG et  une base vectorielle.
