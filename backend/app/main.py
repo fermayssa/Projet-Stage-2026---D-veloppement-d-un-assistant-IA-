@@ -1,15 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers import documents
 
 app = FastAPI(title="RAG Assistant API")
 
-# Autoriser Angular à appeler le backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:4200"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Enregistrer le router documents
+app.include_router(documents.router, prefix="/api", tags=["documents"])
 
 @app.get("/")
 def health_check():
