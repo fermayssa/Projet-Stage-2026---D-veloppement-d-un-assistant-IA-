@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.processors.pdf_processor import extract_text_from_pdf
+from app.services.rag_service import index_document
 import shutil, os, uuid, json
 
 router = APIRouter()
@@ -21,7 +22,7 @@ async def upload_document(file: UploadFile = File(...)):
             detail=f"Type non supporté : {file.content_type}"
         )
 
-    # Sauvegarder le fichier
+    # 1 Sauvegarder le fichier
     file_id = str(uuid.uuid4())
     extension = file.filename.split(".")[-1]
     file_path = f"{UPLOAD_DIR}/{file_id}.{extension}"
@@ -32,11 +33,22 @@ async def upload_document(file: UploadFile = File(...)):
     # Si c'est un PDF, extraire le texte immédiatement
     extracted_text = None
     pages_count = 0
+    chunks_count = 0
 
+    # 2. Extraire le texte si PDF
     if file.content_type == "application/pdf":
         result = extract_text_from_pdf(file_path)
         extracted_text = result["full_text"]
         pages_count = result["total_pages"]
+
+    
+        # 3. Indexer dans ChromaDB via LlamaIndex
+        index_result = index_document(
+            file_id=file_id,
+            filename=file.filename,
+            full_text=extracted_text
+        )
+        chunks_count = index_result["chunks_created"]
 
     # Stocker les infos du document
     documents_store[file_id] = {
@@ -45,8 +57,8 @@ async def upload_document(file: UploadFile = File(...)):
         "type": file.content_type,
         "path": file_path,
         "pages": pages_count,
-        "text_extracted": extracted_text is not None,
-        "text_preview": extracted_text[:200] if extracted_text else None
+        "chunks": chunks_count,
+        "indexed": chunks_count > 0
     }
 
     return {
@@ -54,8 +66,8 @@ async def upload_document(file: UploadFile = File(...)):
         "file_id": file_id,
         "filename": file.filename,
         "pages": pages_count,
-        "text_preview": extracted_text[:200] if extracted_text else "Pas de texte extrait",
-        "chars_extracted": len(extracted_text) if extracted_text else 0
+        "chunks_created": chunks_count,
+        "indexed": chunks_count > 0
     }
 
 @router.get("/documents")
