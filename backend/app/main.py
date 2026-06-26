@@ -13,6 +13,7 @@ app.add_middleware(
 
 # Enregistrer le router documents
 app.include_router(documents.router, prefix="/api", tags=["documents"])
+app.include_router(chat.router, prefix="/api", tags=["chat"])
 
 @app.get("/")
 def health_check():
