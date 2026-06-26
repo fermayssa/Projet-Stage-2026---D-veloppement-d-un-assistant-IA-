@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import documents
+from app.routers import documents, chat
 
 app = FastAPI(title="RAG Assistant API")
 

@@ -17,7 +17,7 @@ def setup_settings():
     
     # Ollama tourne localement — aucune clé API nécessaire
     Settings.llm = Ollama(
-        model="llama3.2",
+        model="llama3.2:1b",
         request_timeout=120.0
     )
 
