@@ -1,1 +1,45 @@
-<p>upload works!</p>
+<div class="upload-container">
+  <h2>📂 Documents</h2>
+
+  <div class="drop-zone"
+    [class.drag-over]="isDragOver"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave()"
+    (drop)="onDrop($event)"
+    (click)="fileInput.click()">
+
+    <div *ngIf="!isUploading">
+      <p class="drop-icon">📁</p>
+      <p class="drop-text">Glissez un fichier ou cliquez</p>
+      <p class="drop-hint">PDF · PNG · JPG acceptés</p>
+    </div>
+
+    <div *ngIf="isUploading" class="uploading">
+      <p>⏳ Traitement en cours...</p>
+    </div>
+
+    <input #fileInput type="file" hidden
+      accept=".pdf,.png,.jpg,.jpeg"
+      (change)="onFileSelected($event)">
+  </div>
+
+  <p *ngIf="uploadMessage" class="upload-message"
+     [class.success]="uploadSuccess"
+     [class.error]="!uploadSuccess">
+    {{ uploadMessage }}
+  </p>
+
+  <div class="documents-list" *ngIf="documents.length > 0">
+    <h3>Indexés ({{ documents.length }})</h3>
+    <div class="doc-item" *ngFor="let doc of documents">
+      <span class="doc-icon">{{ doc.type === 'pdf' ? '📄' : '🖼️' }}</span>
+      <span class="doc-name">{{ doc.filename }}</span>
+      <span class="doc-chunks">{{ doc.chunks }} chunks</span>
+      <button class="delete-btn" (click)="deleteDocument(doc.file_id)">🗑️</button>
+    </div>
+  </div>
+
+  <p *ngIf="documents.length === 0" class="no-docs">
+    Aucun document. Importez un fichier pour commencer.
+  </p>
+</div>
