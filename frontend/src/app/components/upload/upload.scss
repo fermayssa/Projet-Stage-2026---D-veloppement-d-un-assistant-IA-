@@ -1,0 +1,72 @@
+.upload-container {
+  padding: 20px;
+  h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+  }
+}
+
+.drop-zone {
+  border: 2px dashed #667eea;
+  border-radius: 12px;
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #f8f9ff;
+  transition: all 0.2s;
+
+  &:hover, &.drag-over {
+    background: #eef0ff;
+    border-color: #4c63d2;
+  }
+
+  .drop-icon { font-size: 32px; margin-bottom: 8px; }
+  .drop-text { color: #555; font-size: 14px; }
+  .drop-hint { color: #aaa; font-size: 12px; margin-top: 4px; }
+  .uploading { color: #667eea; font-size: 14px; }
+}
+
+.upload-message {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+
+  &.success { background: #d4edda; color: #155724; }
+  &.error   { background: #f8d7da; color: #721c24; }
+}
+
+.documents-list {
+  margin-top: 20px;
+  h3 { font-size: 13px; color: #888; margin-bottom: 10px; }
+}
+
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+
+  .doc-icon  { font-size: 16px; }
+  .doc-name  { flex: 1; font-size: 13px; color: #333;
+               white-space: nowrap; overflow: hidden;
+               text-overflow: ellipsis; max-width: 140px; }
+  .doc-chunks { font-size: 11px; color: #aaa; }
+  .delete-btn { background: none; border: none;
+                cursor: pointer; font-size: 14px;
+                &:hover { opacity: 0.6; } }
+}
+
+.no-docs {
+  margin-top: 16px;
+  color: #bbb;
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+}
