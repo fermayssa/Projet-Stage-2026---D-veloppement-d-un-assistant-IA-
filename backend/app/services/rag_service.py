@@ -8,18 +8,14 @@ import chromadb
 
 CHROMA_DIR = "chroma_db"
 
-def setup_settings():
-    """Configure le modèle d'embedding et Ollama comme LLM gratuit."""
-    
-    Settings.embed_model = HuggingFaceEmbedding(
-        model_name="BAAI/bge-small-en-v1.5"
-    )
-    
-    # Ollama tourne localement — aucune clé API nécessaire
-    Settings.llm = Ollama(
-        model="llama3.2:1b",
-        request_timeout=120.0
-    )
+# ✅ Initialisation unique au démarrage du module
+Settings.embed_model = HuggingFaceEmbedding(
+    model_name="BAAI/bge-small-en-v1.5"
+)
+Settings.llm = Ollama(
+    model="llama3.2:1b",
+    request_timeout=120.0
+)
 
 def get_vector_store():
     client = chromadb.PersistentClient(path=CHROMA_DIR)
@@ -28,8 +24,7 @@ def get_vector_store():
     return vector_store, client
 
 def index_document(file_id: str, filename: str, full_text: str) -> dict:
-    setup_settings()
-
+    # ❌ plus de setup_settings() ici
     document = Document(
         text=full_text,
         metadata={
@@ -58,8 +53,7 @@ def index_document(file_id: str, filename: str, full_text: str) -> dict:
     }
 
 def query_documents(question: str) -> dict:
-    setup_settings()
-
+    # ❌ plus de setup_settings() ici
     vector_store, _ = get_vector_store()
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
