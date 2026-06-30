@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { Document } from '../../models/interfaces';
@@ -20,7 +20,10 @@ export class UploadComponent implements OnInit {
   uploadSuccess = false;
   isDragOver = false;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.loadDocuments();
@@ -28,7 +31,10 @@ export class UploadComponent implements OnInit {
 
   loadDocuments() {
     this.apiService.getDocuments().subscribe({
-      next: (res) => this.documents = res.documents,
+      next: (res) => {
+        this.documents = res.documents;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Erreur chargement', err)
     });
   }
@@ -57,19 +63,22 @@ export class UploadComponent implements OnInit {
   uploadFile(file: File) {
     this.isUploading = true;
     this.uploadMessage = '';
+    this.cdr.detectChanges();
 
     this.apiService.uploadDocument(file).subscribe({
       next: (res) => {
         this.isUploading = false;
         this.uploadSuccess = true;
-        this.uploadMessage = `✅ "${res.filename}" importé — ${res.chunks_created} chunks`;
+        this.uploadMessage = `"${res.filename}" importé — ${res.chunks_created} chunks`;
         this.loadDocuments();
         this.documentUploaded.emit();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isUploading = false;
         this.uploadSuccess = false;
-        this.uploadMessage = `❌ Erreur : ${err.error?.detail || 'Upload échoué'}`;
+        this.uploadMessage = `Erreur : ${err.error?.detail || 'Upload échoué'}`;
+        this.cdr.detectChanges();
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
@@ -29,7 +29,10 @@ export class ChatComponent {
     'Résume en une phrase'
   ];
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   sendMessage(text?: string) {
     const question = (text ?? this.currentQuestion).trim();
@@ -38,6 +41,7 @@ export class ChatComponent {
     this.currentQuestion = '';
     this.messages.push({ role: 'user', content: question });
     this.isLoading = true;
+    this.cdr.detectChanges();
 
     this.apiService.sendMessage(question).subscribe({
       next: (res) => {
@@ -47,6 +51,7 @@ export class ChatComponent {
           content: res.answer,
           sources: res.sources
         });
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isLoading = false;
@@ -54,6 +59,7 @@ export class ChatComponent {
           role: 'assistant',
           content: "Erreur lors de la génération de la réponse."
         });
+        this.cdr.detectChanges();
       }
     });
   }
@@ -67,6 +73,7 @@ export class ChatComponent {
 
   clearChat() {
     this.messages = [];
+    this.cdr.detectChanges();
   }
 
   scorePercent(score: number): number {
