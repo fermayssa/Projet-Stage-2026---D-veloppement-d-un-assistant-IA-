@@ -7,69 +7,126 @@
 
 .app-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  height: 60px;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 20px;
+  background: var(--navy);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
+}
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    .logo { font-size: 28px; }
+.logo-mark {
+  width: 30px;
+  height: 30px;
+  background: var(--bordeaux);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--off-white);
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
 
-    h1 {
-      font-size: 18px;
-      font-weight: 600;
-      margin: 0;
-      color: white;
-    }
+.brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
 
-    .subtitle {
-      font-size: 11px;
-      opacity: 0.8;
-      display: block;
-    }
-  }
+.brand-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--off-white);
+}
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    opacity: 0.9;
+.brand-sub {
+  font-size: 11px;
+  color: var(--gray-mid);
+}
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background: #4caf50;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+
+  .project-name {
+    font-size: 12.5px;
+    color: var(--gray-mid);
+    padding: 4px 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
   }
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--gray-mid);
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+  }
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--gray-mid);
+  font-size: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition);
+
+  &:hover { background: rgba(255,255,255,0.08); }
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gray-mid);
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .app-main {
   display: flex;
   flex: 1;
   overflow: hidden;
-  height: calc(100vh - 60px);
 }
 
 .sidebar {
-  width: 280px;
-  background: white;
-  border-right: 1px solid #e8e8e8;
+  width: 260px;
+  background: var(--off-white);
+  border-right: 1px solid var(--gray-mid);
   overflow-y: auto;
   flex-shrink: 0;
 }
@@ -77,7 +134,7 @@
 .chat-section {
   flex: 1;
   overflow: hidden;
-  background: #f9f9f9;
+  background: var(--off-white);
   display: flex;
   flex-direction: column;
 }
