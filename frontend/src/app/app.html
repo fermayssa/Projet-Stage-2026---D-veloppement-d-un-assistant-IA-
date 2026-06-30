@@ -1,17 +1,28 @@
 <div class="app-layout">
+
   <header class="app-header">
     <div class="header-left">
-      <span class="logo">🤖</span>
-      <div>
-        <h1>RAG Assistant</h1>
-        <span class="subtitle">Vermeg — Stage 2026</span>
+      <div class="logo-mark">V</div>
+      <div class="brand">
+        <span class="brand-name">Vermeg Document Assistant</span>
+        <span class="brand-sub">Assistant documentaire intelligent</span>
       </div>
     </div>
+
+    <div class="header-center">
+      <span class="project-name">Projet de stage — RAG multimodal</span>
+    </div>
+
     <div class="header-right">
-      <span class="status-dot"></span>
-      <span class="status-text">Système actif</span>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span>Système actif</span>
+      </div>
+      <button class="icon-btn" title="Paramètres">⚙</button>
+      <div class="user-avatar" title="Utilisateur">M</div>
     </div>
   </header>
+
   <main class="app-main">
     <aside class="sidebar">
       <app-upload></app-upload>
@@ -20,4 +31,5 @@
       <app-chat></app-chat>
     </section>
   </main>
+
 </div>
