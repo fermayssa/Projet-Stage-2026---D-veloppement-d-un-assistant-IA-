@@ -30,14 +30,18 @@ export class ChatComponent {
 
     this.apiService.sendMessage(question).subscribe({
       next: (res) => {
+        console.log('Réponse reçue:', res);        // ← ajoute ceci
+        console.log('Answer:', res.answer);         // ← et ceci
         this.isLoading = false;
         this.messages.push({
           role: 'assistant',
           content: res.answer,
           sources: res.sources
         });
+        console.log('Messages:', this.messages);    // ← et ceci
       },
-      error: () => {
+      error: (err) => {
+        console.error('Erreur:', err);
         this.isLoading = false;
         this.messages.push({
           role: 'assistant',
