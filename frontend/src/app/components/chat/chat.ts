@@ -17,35 +17,42 @@ export class ChatComponent {
   currentQuestion = '';
   isLoading = false;
 
+  starterPrompts = [
+    'De quoi parle ce document ?',
+    'Résume le contenu principal',
+    'Quelles sont les fonctionnalités décrites ?'
+  ];
+
+  followUpSuggestions = [
+    'Peux-tu donner plus de détails ?',
+    'Quelles sont les sources exactes ?',
+    'Résume en une phrase'
+  ];
+
   constructor(private apiService: ApiService) {}
 
-  sendMessage() {
-    if (!this.currentQuestion.trim() || this.isLoading) return;
+  sendMessage(text?: string) {
+    const question = (text ?? this.currentQuestion).trim();
+    if (!question || this.isLoading) return;
 
-    const question = this.currentQuestion.trim();
     this.currentQuestion = '';
-
     this.messages.push({ role: 'user', content: question });
     this.isLoading = true;
 
     this.apiService.sendMessage(question).subscribe({
       next: (res) => {
-        console.log('Réponse reçue:', res);        // ← ajoute ceci
-        console.log('Answer:', res.answer);         // ← et ceci
         this.isLoading = false;
         this.messages.push({
           role: 'assistant',
           content: res.answer,
           sources: res.sources
         });
-        console.log('Messages:', this.messages);    // ← et ceci
       },
-      error: (err) => {
-        console.error('Erreur:', err);
+      error: () => {
         this.isLoading = false;
         this.messages.push({
           role: 'assistant',
-          content: '❌ Erreur lors de la génération de la réponse.'
+          content: "Erreur lors de la génération de la réponse."
         });
       }
     });
@@ -60,5 +67,9 @@ export class ChatComponent {
 
   clearChat() {
     this.messages = [];
+  }
+
+  scorePercent(score: number): number {
+    return Math.round(score * 100);
   }
 }
