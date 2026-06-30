@@ -24,12 +24,39 @@
   </header>
 
   <main class="app-main">
+
     <aside class="sidebar">
-      <app-upload></app-upload>
+      <nav class="sidebar-nav">
+        <div *ngFor="let item of navItems" class="nav-block">
+
+          <button class="nav-item"
+                  [class.active]="activeSection === item.id"
+                  (click)="selectSection(item.id)">
+            <span class="nav-icon">{{ item.icon }}</span>
+            <span class="nav-label">{{ item.label }}</span>
+            <span class="nav-chevron" *ngIf="item.expandable">
+              {{ documentsExpanded ? '▾' : '▸' }}
+            </span>
+          </button>
+
+          <div class="nav-panel" *ngIf="item.id === 'documents' && documentsExpanded">
+            <app-upload></app-upload>
+          </div>
+
+        </div>
+      </nav>
+
+      <div class="sidebar-actions">
+        <button class="action-btn primary">Nouveau corpus</button>
+        <button class="action-btn">Importer</button>
+        <button class="action-btn">Supprimer</button>
+      </div>
     </aside>
+
     <section class="chat-section">
       <app-chat></app-chat>
     </section>
+
   </main>
 
 </div>
