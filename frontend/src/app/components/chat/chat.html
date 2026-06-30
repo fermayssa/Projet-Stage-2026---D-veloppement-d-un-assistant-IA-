@@ -18,7 +18,8 @@
       </div>
     </div>
 
-    <div *ngFor="let msg of messages; let last = index === messages.length - 1"
+    <div *ngFor="let msg of messages; let i = index"
+     [class.last-message]="i === messages.length - 1"
          class="message-block"
          [class.user]="msg.role === 'user'">
 
@@ -46,7 +47,7 @@
         </div>
       </div>
 
-      <div *ngIf="msg.role === 'assistant' && last" class="suggestions-block">
+      <div *ngIf="msg.role === 'assistant' && i === messages.length - 1" class="suggestions-block">
         <div class="suggestions-label">Suggestions</div>
         <div class="suggestion-chips">
           <button *ngFor="let s of followUpSuggestions" class="suggestion-chip" (click)="sendMessage(s)">
