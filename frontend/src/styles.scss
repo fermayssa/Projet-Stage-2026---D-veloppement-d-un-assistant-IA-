@@ -36,3 +36,8 @@ button {
   border-radius: 3px;
   &:hover { background: #94a3b8; }
 }
+
+.nav-icon, .drop-icon, .doc-icon, .tool-btn, .icon-btn, .send-btn {
+  font-variant-emoji: text;
+  -webkit-font-feature-settings: "liga" 0;
+}
