@@ -120,6 +120,7 @@
 .app-main {
   display: flex;
   flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -133,6 +134,7 @@
 
 .chat-section {
   flex: 1;
+  min-height: 0;
   overflow: hidden;
   background: var(--off-white);
   display: flex;
