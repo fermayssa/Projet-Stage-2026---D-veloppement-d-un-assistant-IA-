@@ -17,10 +17,10 @@ export class App {
   documentsExpanded = true;
 
   navItems = [
-    { id: 'documents', label: 'Documents', icon: '📂', expandable: true },
-    { id: 'corpus', label: 'Corpus', icon: '📊', expandable: false },
-    { id: 'conversations', label: 'Conversations', icon: '💬', expandable: false },
-    { id: 'historique', label: 'Historique', icon: '📑', expandable: false },
+    { id: 'documents', label: 'Documents', icon: '▤', expandable: true },
+    { id: 'corpus', label: 'Corpus', icon: '▦', expandable: false },
+    { id: 'conversations', label: 'Conversations', icon: '◔', expandable: false },
+    { id: 'historique', label: 'Historique', icon: '◷', expandable: false },
     { id: 'parametres', label: 'Paramètres', icon: '⚙', expandable: false }
   ];
 
