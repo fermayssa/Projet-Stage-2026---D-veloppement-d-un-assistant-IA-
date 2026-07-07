@@ -18,15 +18,15 @@ export class ChatComponent {
   isLoading = false;
 
   starterPrompts = [
-    'De quoi parle ce document ?',
-    'Résume le contenu principal',
-    'Quelles sont les fonctionnalités décrites ?'
+    'Quelles sont les technologies utilisées dans ce projet ?',
+    'Résume le contenu du document principal',
+    'Quels sont les besoins fonctionnels décrits ?'
   ];
 
   followUpSuggestions = [
-    'Peux-tu donner plus de détails ?',
-    'Quelles sont les sources exactes ?',
-    'Résume en une phrase'
+    'Donne plus de détails sur ce point',
+    'Cite le passage exact du document',
+    'Quels autres documents parlent de ce sujet ?'
   ];
 
   constructor(

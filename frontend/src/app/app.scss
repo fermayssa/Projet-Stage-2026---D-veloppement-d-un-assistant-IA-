@@ -221,3 +221,8 @@
     &:hover { background: var(--black-soft); }
   }
 }
+.action-btn.danger {
+  color: var(--bordeaux);
+  border-color: var(--bordeaux);
+  &:hover { background: #fff0f0; }
+}

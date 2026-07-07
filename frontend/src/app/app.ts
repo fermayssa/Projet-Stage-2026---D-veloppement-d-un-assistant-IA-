@@ -30,4 +30,22 @@ export class App {
     }
     this.activeSection = id;
   }
+  nouveauCorpus() {
+  if (confirm('Réinitialiser la conversation et vider le corpus ?')) {
+    window.location.reload();
+  }
+}
+
+importer() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.pdf,.png,.jpg,.jpeg';
+  input.click();
+}
+
+supprimer() {
+  if (confirm('Supprimer tous les documents indexés ?')) {
+    window.location.reload();
+  }
+}
 }

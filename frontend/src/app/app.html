@@ -47,9 +47,11 @@
       </nav>
 
       <div class="sidebar-actions">
-        <button class="action-btn primary">Nouveau corpus</button>
-        <button class="action-btn">Importer</button>
-        <button class="action-btn">Supprimer</button>
+        
+        <button class="action-btn primary" (click)="nouveauCorpus()">Nouveau corpus</button>
+        <button class="action-btn" (click)="importer()">Importer</button>
+        <button class="action-btn danger" (click)="supprimer()">Supprimer</button>
+
       </div>
     </aside>
 

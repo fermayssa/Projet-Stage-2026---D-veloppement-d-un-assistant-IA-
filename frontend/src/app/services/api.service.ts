@@ -30,9 +30,11 @@ export class ApiService {
     return this.http.delete(`${this.baseUrl}/documents/${fileId}`);
   }
 
-  sendMessage(question: string): Observable<ChatResponse> {
-    return this.http.post<ChatResponse>(
-      `${this.baseUrl}/chat`, { question }
-    );
+  sendMessage(question: string, fileIds?: string[]): Observable<ChatResponse> {
+  const body: any = { question };
+  if (fileIds && fileIds.length > 0) {
+    body.file_ids = fileIds;
   }
+  return this.http.post<ChatResponse>(`${this.baseUrl}/chat`, body);
+}
 }
