@@ -1,4 +1,4 @@
-from llama_index.core import VectorStoreIndex, Settings
+from llama_index.core import VectorStoreIndex, Settings, PromptTemplate
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core import Document, StorageContext
 from llama_index.llms.ollama import Ollama
@@ -8,23 +8,28 @@ import chromadb
 
 CHROMA_DIR = "chroma_db"
 
-# ✅ Initialisation unique au démarrage du module
-Settings.embed_model = HuggingFaceEmbedding(
-    model_name="BAAI/bge-small-en-v1.5"
-)
-Settings.llm = Ollama(
+def setup_settings():
+    """Configure le modèle d'embedding et Ollama comme LLM."""
+    Settings.embed_model = HuggingFaceEmbedding(
+        model_name="BAAI/bge-small-en-v1.5"
+    )
+    Settings.llm = Ollama(
     model="llama3.2:1b",
-    request_timeout=120.0
+    request_timeout=120.0,
+    context_window=2048
 )
 
 def get_vector_store():
+    """Connexion à ChromaDB."""
     client = chromadb.PersistentClient(path=CHROMA_DIR)
     collection = client.get_or_create_collection("documents")
     vector_store = ChromaVectorStore(chroma_collection=collection)
     return vector_store, client
 
 def index_document(file_id: str, filename: str, full_text: str) -> dict:
-    # ❌ plus de setup_settings() ici
+    """Indexe un document dans ChromaDB."""
+    setup_settings()
+
     document = Document(
         text=full_text,
         metadata={
@@ -34,7 +39,7 @@ def index_document(file_id: str, filename: str, full_text: str) -> dict:
         }
     )
 
-    splitter = SentenceSplitter(chunk_size=512, chunk_overlap=50)
+    splitter = SentenceSplitter(chunk_size=256, chunk_overlap=30)
     nodes = splitter.get_nodes_from_documents([document])
 
     vector_store, _ = get_vector_store()
@@ -53,7 +58,9 @@ def index_document(file_id: str, filename: str, full_text: str) -> dict:
     }
 
 def query_documents(question: str) -> dict:
-    # ❌ plus de setup_settings() ici
+    """Pose une question sur tous les documents indexés."""
+    setup_settings()
+
     vector_store, _ = get_vector_store()
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
@@ -62,9 +69,25 @@ def query_documents(question: str) -> dict:
         storage_context=storage_context
     )
 
+    # Prompt strict — force à utiliser uniquement le contexte documentaire
+    qa_prompt = PromptTemplate(
+        "Tu es un assistant documentaire professionnel de Vermeg.\n"
+        "Réponds UNIQUEMENT en te basant sur le contexte fourni ci-dessous.\n"
+        "Si la réponse n'est pas dans le contexte, réponds exactement : "
+        "'Cette information n'est pas disponible dans les documents fournis.'\n"
+        "Réponds en français, de façon claire et structurée.\n\n"
+        "Contexte extrait des documents :\n"
+        "---------------------\n"
+        "{context_str}\n"
+        "---------------------\n\n"
+        "Question : {query_str}\n\n"
+        "Réponse :"
+    )
+
     query_engine = index.as_query_engine(
-        similarity_top_k=3,
-        response_mode="compact"
+        similarity_top_k=5,
+        response_mode="compact",
+        text_qa_template=qa_prompt
     )
 
     response = query_engine.query(question)
@@ -74,6 +97,7 @@ def query_documents(question: str) -> dict:
         for node in response.source_nodes:
             sources.append({
                 "filename": node.metadata.get("filename", "inconnu"),
+                "page": node.metadata.get("page", None),
                 "score": round(node.score, 3) if node.score else None,
                 "text_preview": node.text[:150]
             })
