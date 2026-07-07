@@ -69,19 +69,35 @@ def query_documents(question: str) -> dict:
         storage_context=storage_context
     )
 
-    # Prompt strict — force à utiliser uniquement le contexte documentaire
+    # Récupérer les chunks pertinents
+    retriever = index.as_retriever(similarity_top_k=5)
+    nodes = retriever.retrieve(question)
+
+    # Filtrer les chunks avec score > 0.55
+    relevant_nodes = [n for n in nodes if (n.score or 0) >= 0.55]
+
+    if not relevant_nodes:
+        return {
+            "question": question,
+            "answer": "Je ne trouve pas cette information dans les documents indexés.",
+            "sources": []
+        }
+
+    # Construire le contexte depuis les chunks
+    context_parts = []
+    for node in relevant_nodes:
+        filename = node.metadata.get("filename", "inconnu")
+        context_parts.append(f"[{filename}]: {node.text}")
+
+    context = "\n\n".join(context_parts)
+
+    # Prompt très court et très direct pour llama3.2:1b
     qa_prompt = PromptTemplate(
-        "Tu es un assistant documentaire professionnel de Vermeg.\n"
-        "Réponds UNIQUEMENT en te basant sur le contexte fourni ci-dessous.\n"
-        "Si la réponse n'est pas dans le contexte, réponds exactement : "
-        "'Cette information n'est pas disponible dans les documents fournis.'\n"
-        "Réponds en français, de façon claire et structurée.\n\n"
-        "Contexte extrait des documents :\n"
-        "---------------------\n"
-        "{context_str}\n"
-        "---------------------\n\n"
-        "Question : {query_str}\n\n"
-        "Réponse :"
+        "Contexte:\n{context_str}\n\n"
+        "Question: {query_str}\n\n"
+        "Réponds en français en utilisant UNIQUEMENT le contexte. "
+        "Si la réponse est dans le contexte, cite-la directement. "
+        "Réponse:"
     )
 
     query_engine = index.as_query_engine(
@@ -91,19 +107,34 @@ def query_documents(question: str) -> dict:
     )
 
     response = query_engine.query(question)
+    answer = str(response).strip()
 
+    # Si la réponse est trop générique, retourner directement le texte extrait
+    mots_generiques = [
+        "bibliothèque", "multimodale", "embedding", "vectoriel",
+        "reconnaissance optique", "je suis désolé", "cannot", "I cannot"
+    ]
+    
+    if any(mot in answer.lower() for mot in mots_generiques):
+        # Retourner directement le contenu extrait des chunks
+        direct_answer = "Voici le contenu extrait des documents :\n\n"
+        for node in relevant_nodes:
+            filename = node.metadata.get("filename", "inconnu")
+            direct_answer += f"📄 {filename} :\n{node.text.strip()}\n\n"
+        answer = direct_answer
+
+    # Construire les sources
     sources = []
-    if hasattr(response, 'source_nodes'):
-        for node in response.source_nodes:
-            sources.append({
-                "filename": node.metadata.get("filename", "inconnu"),
-                "page": node.metadata.get("page", None),
-                "score": round(node.score, 3) if node.score else None,
-                "text_preview": node.text[:150]
-            })
+    for node in relevant_nodes:
+        sources.append({
+            "filename": node.metadata.get("filename", "inconnu"),
+            "page": node.metadata.get("page", None),
+            "score": round(node.score, 3) if node.score else None,
+            "text_preview": node.text[:150]
+        })
 
     return {
         "question": question,
-        "answer": str(response),
+        "answer": answer,
         "sources": sources
     }
