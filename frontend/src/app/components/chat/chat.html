@@ -2,9 +2,14 @@
 
   <div class="chat-header">
     <h2>Assistant RAG</h2>
-    <button class="clear-btn" (click)="clearChat()" *ngIf="messages.length > 0">
-      Effacer
-    </button>
+    <div class="header-right">
+      <div class="filter-badge" [class.active]="filterMode === 'selection'">
+        {{ getFilterLabel() }}
+      </div>
+      <button class="clear-btn" (click)="clearChat()" *ngIf="messages.length > 0">
+        Effacer
+      </button>
+    </div>
   </div>
 
   <div class="messages-zone">
@@ -12,14 +17,15 @@
     <div *ngIf="messages.length === 0" class="welcome">
       <p class="welcome-title">Importez des documents puis posez vos questions</p>
       <div class="starters">
-        <button *ngFor="let p of starterPrompts" class="starter-chip" (click)="sendMessage(p)">
+        <button *ngFor="let p of starterPrompts"
+                class="starter-chip"
+                (click)="sendMessage(p)">
           {{ p }}
         </button>
       </div>
     </div>
 
     <div *ngFor="let msg of messages; let i = index"
-     [class.last-message]="i === messages.length - 1"
          class="message-block"
          [class.user]="msg.role === 'user'">
 
@@ -30,12 +36,17 @@
         {{ msg.content }}
       </div>
 
+      <div *ngIf="msg.filtered_by && msg.filtered_by !== 'all'"
+           class="filter-info">
+        ▤ Recherche filtrée sur {{ msg.filtered_by.length }} document(s)
+      </div>
+
       <div *ngIf="msg.sources && msg.sources.length > 0" class="sources-block">
         <div class="sources-label">Sources utilisées</div>
-
         <div *ngFor="let src of msg.sources" class="source-card">
           <div class="source-top">
-            <span class="source-file">📄 {{ src.filename }}</span>
+            <span class="source-file">▤ {{ src.filename }}</span>
+            <span class="source-page" *ngIf="src.page">p.{{ src.page }}</span>
           </div>
           <div class="source-bottom">
             <div class="relevance-bar">
@@ -47,10 +58,13 @@
         </div>
       </div>
 
-      <div *ngIf="msg.role === 'assistant' && i === messages.length - 1" class="suggestions-block">
+      <div *ngIf="msg.role === 'assistant' && i === messages.length - 1"
+           class="suggestions-block">
         <div class="suggestions-label">Suggestions</div>
         <div class="suggestion-chips">
-          <button *ngFor="let s of followUpSuggestions" class="suggestion-chip" (click)="sendMessage(s)">
+          <button *ngFor="let s of followUpSuggestions"
+                  class="suggestion-chip"
+                  (click)="sendMessage(s)">
             {{ s }}
           </button>
         </div>
@@ -67,12 +81,53 @@
 
   </div>
 
+  <!-- Sélecteur de documents -->
+  <div class="document-selector" *ngIf="showDocumentSelector">
+    <div class="selector-header">
+      <span class="selector-title">Sources de recherche</span>
+      <button class="selector-close" (click)="toggleDocumentSelector()">✕</button>
+    </div>
+
+    <div class="mode-tabs">
+      <button class="mode-tab" [class.active]="filterMode === 'all'"
+              (click)="setFilterMode('all')">
+        Tous les documents
+      </button>
+      <button class="mode-tab" [class.active]="filterMode === 'selection'"
+              (click)="setFilterMode('selection')">
+        Sélection
+      </button>
+    </div>
+
+    <div class="doc-list" *ngIf="filterMode === 'selection'">
+      <div *ngIf="availableDocuments.length === 0" class="no-docs-msg">
+        Aucun document indexé.
+      </div>
+      <label *ngFor="let doc of availableDocuments"
+             class="doc-checkbox-row"
+             [class.checked]="isSelected(doc.file_id)">
+        <input type="checkbox"
+               [checked]="isSelected(doc.file_id)"
+               (change)="toggleDocumentSelection(doc.file_id)">
+        <span class="doc-icon-small">▤</span>
+        <span class="doc-name-small">{{ doc.filename }}</span>
+        <span class="doc-chunks-small">{{ doc.chunks }} chunks</span>
+      </label>
+    </div>
+  </div>
+
   <div class="input-zone">
     <div class="input-toolbar">
-      <button class="tool-btn" title="Ajouter un document">📎</button>
-      <button class="tool-btn" title="Ajouter une image">📷</button>
-      <button class="tool-btn" title="Choisir parmi les documents">📄</button>
+      <button class="tool-btn"
+              [class.tool-active]="showDocumentSelector"
+              (click)="toggleDocumentSelector()"
+              title="Choisir les sources">
+        ▤
+      </button>
+      <button class="tool-btn" title="Ajouter un document">⎘</button>
+      <button class="tool-btn" title="Ajouter une image">▥</button>
     </div>
+
     <textarea
       [(ngModel)]="currentQuestion"
       (keydown)="onKeyDown($event)"
@@ -80,7 +135,10 @@
       rows="1"
       [disabled]="isLoading">
     </textarea>
-    <button class="send-btn" (click)="sendMessage()" [disabled]="isLoading || !currentQuestion.trim()">
+
+    <button class="send-btn"
+            (click)="sendMessage()"
+            [disabled]="isLoading || !currentQuestion.trim()">
       ➤
     </button>
   </div>
