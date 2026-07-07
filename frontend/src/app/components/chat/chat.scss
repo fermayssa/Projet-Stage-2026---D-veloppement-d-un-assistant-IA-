@@ -313,3 +313,134 @@
   &:hover:not(:disabled) { background: #6f1622; }
   &:disabled { opacity: 0.35; cursor: not-allowed; }
 }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: var(--gray-light);
+  color: #64748B;
+  border: 1px solid var(--gray-mid);
+
+  &.active {
+    background: #EFF6FF;
+    color: var(--navy);
+    border-color: var(--navy);
+  }
+}
+
+.filter-info {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #64748B;
+  padding: 4px 8px;
+  background: var(--gray-light);
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.document-selector {
+  background: white;
+  border: 1px solid var(--gray-mid);
+  border-radius: var(--radius);
+  margin: 0 24px 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--gray-light);
+
+  .selector-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--black-soft);
+  }
+
+  .selector-close {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: #94A3B8;
+    cursor: pointer;
+    &:hover { color: var(--black-soft); }
+  }
+}
+
+.mode-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.mode-tab {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: none;
+  font-size: 12px;
+  color: #64748B;
+  cursor: pointer;
+  transition: all var(--transition);
+  border-bottom: 2px solid transparent;
+
+  &.active {
+    color: var(--navy);
+    border-bottom-color: var(--navy);
+    font-weight: 600;
+  }
+
+  &:hover:not(.active) { background: var(--gray-light); }
+}
+
+.doc-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.no-docs-msg {
+  text-align: center;
+  color: #94A3B8;
+  font-size: 12px;
+  padding: 16px;
+}
+
+.doc-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background var(--transition);
+
+  &:hover { background: var(--gray-light); }
+  &.checked { background: #F0F4FF; }
+
+  input[type="checkbox"] {
+    accent-color: var(--navy);
+    width: 14px;
+    height: 14px;
+  }
+
+  .doc-icon-small { color: #64748B; }
+  .doc-name-small { flex: 1; color: var(--black-soft); white-space: nowrap;
+                    overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+  .doc-chunks-small { color: #94A3B8; font-size: 10px; }
+}
+
+.tool-active {
+  background: var(--gray-light) !important;
+  color: var(--navy) !important;
+}
