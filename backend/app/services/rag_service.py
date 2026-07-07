@@ -57,8 +57,8 @@ def index_document(file_id: str, filename: str, full_text: str) -> dict:
         "indexed": True
     }
 
-def query_documents(question: str) -> dict:
-    """Pose une question sur tous les documents indexés."""
+def query_documents(question: str, file_ids: list = None) -> dict:
+    """Pose une question, optionnellement filtrée sur des documents spécifiques."""
     setup_settings()
 
     vector_store, _ = get_vector_store()
@@ -69,29 +69,23 @@ def query_documents(question: str) -> dict:
         storage_context=storage_context
     )
 
-    # Récupérer les chunks pertinents
-    retriever = index.as_retriever(similarity_top_k=5)
-    nodes = retriever.retrieve(question)
+    # Construire les filtres si des fichiers sont sélectionnés
+    from llama_index.core.vector_stores import MetadataFilter, MetadataFilters, FilterOperator
 
-    # Filtrer les chunks avec score > 0.55
-    relevant_nodes = [n for n in nodes if (n.score or 0) >= 0.55]
+    filters = None
+    if file_ids and len(file_ids) > 0:
+        filters = MetadataFilters(
+            filters=[
+                MetadataFilter(
+                    key="file_id",
+                    value=fid,
+                    operator=FilterOperator.EQ
+                )
+                for fid in file_ids
+            ],
+            condition="or"
+        )
 
-    if not relevant_nodes:
-        return {
-            "question": question,
-            "answer": "Je ne trouve pas cette information dans les documents indexés.",
-            "sources": []
-        }
-
-    # Construire le contexte depuis les chunks
-    context_parts = []
-    for node in relevant_nodes:
-        filename = node.metadata.get("filename", "inconnu")
-        context_parts.append(f"[{filename}]: {node.text}")
-
-    context = "\n\n".join(context_parts)
-
-    # Prompt très court et très direct pour llama3.2:1b
     qa_prompt = PromptTemplate(
         "Contexte:\n{context_str}\n\n"
         "Question: {query_str}\n\n"
@@ -103,27 +97,32 @@ def query_documents(question: str) -> dict:
     query_engine = index.as_query_engine(
         similarity_top_k=5,
         response_mode="compact",
-        text_qa_template=qa_prompt
+        text_qa_template=qa_prompt,
+        filters=filters
     )
 
     response = query_engine.query(question)
     answer = str(response).strip()
 
-    # Si la réponse est trop générique, retourner directement le texte extrait
     mots_generiques = [
         "bibliothèque", "multimodale", "embedding", "vectoriel",
         "reconnaissance optique", "je suis désolé", "cannot", "I cannot"
     ]
-    
-    if any(mot in answer.lower() for mot in mots_generiques):
-        # Retourner directement le contenu extrait des chunks
+
+    retriever = index.as_retriever(
+        similarity_top_k=5,
+        filters=filters
+    )
+    nodes = retriever.retrieve(question)
+    relevant_nodes = [n for n in nodes if (n.score or 0) >= 0.55]
+
+    if any(mot in answer.lower() for mot in mots_generiques) and relevant_nodes:
         direct_answer = "Voici le contenu extrait des documents :\n\n"
         for node in relevant_nodes:
             filename = node.metadata.get("filename", "inconnu")
             direct_answer += f"📄 {filename} :\n{node.text.strip()}\n\n"
         answer = direct_answer
 
-    # Construire les sources
     sources = []
     for node in relevant_nodes:
         sources.append({
@@ -136,5 +135,6 @@ def query_documents(question: str) -> dict:
     return {
         "question": question,
         "answer": answer,
-        "sources": sources
+        "sources": sources,
+        "filtered_by": file_ids if file_ids else "all"
     }
