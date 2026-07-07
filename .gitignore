@@ -24,3 +24,7 @@ backend/chroma_db/
 
 # Fichiers uploadés
 backend/uploads/
+
+# Environment variables
+.env
+backend/.env
