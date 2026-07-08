@@ -5,19 +5,22 @@ from llama_index.llms.ollama import Ollama
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.chroma import ChromaVectorStore
 import chromadb
+from llama_index.llms.groq import Groq
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 CHROMA_DIR = "chroma_db"
 
 def setup_settings():
-    """Configure le modèle d'embedding et Ollama comme LLM."""
     Settings.embed_model = HuggingFaceEmbedding(
         model_name="BAAI/bge-small-en-v1.5"
     )
-    Settings.llm = Ollama(
-    model="llama3.2:1b",
-    request_timeout=120.0,
-    context_window=2048
-)
+    Settings.llm = Groq(
+        model="llama-3.1-8b-instant",
+        api_key=os.getenv("GROQ_API_KEY")
+    )
 
 def get_vector_store():
     """Connexion à ChromaDB."""
