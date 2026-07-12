@@ -1,1 +1,117 @@
-<p>studio works!</p>
+<div class="studio-container">
+
+  <div class="studio-header">
+    <h3>Studio</h3>
+  </div>
+
+  <!-- État idle -->
+  <div *ngIf="step === 'idle'" class="studio-idle">
+    <div class="studio-actions">
+      <button class="studio-btn primary" (click)="startFormGeneration()">
+        ▤ Générer un formulaire
+      </button>
+      <button class="studio-btn" disabled>
+        ◈ Résumé du document
+        <span class="soon">Bientôt</span>
+      </button>
+      <button class="studio-btn" disabled>
+        ⬡ Carte mentale
+        <span class="soon">Bientôt</span>
+      </button>
+    </div>
+
+    <div class="studio-empty" *ngIf="!generatedForm">
+      <p>La sortie Studio s'affichera ici.</p>
+      <p class="studio-hint">Cliquez sur un bouton ci-dessus pour commencer.</p>
+    </div>
+
+    <div class="studio-result" *ngIf="generatedForm">
+      <div class="result-card" (click)="step = 'viewing'">
+        <span class="result-icon">▤</span>
+        <div>
+          <p class="result-title">{{ generatedForm.titre_formulaire }}</p>
+          <p class="result-meta">{{ generatedForm.champs.length }} champs · Cliquer pour consulter</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sélection du document -->
+  <div *ngIf="step === 'selecting'" class="studio-step">
+    <div class="step-header">
+      <span class="step-title">Choisir un document source</span>
+      <button class="back-btn" (click)="reset()">✕</button>
+    </div>
+
+    <div *ngIf="documents.length === 0" class="no-docs">
+      Aucun document indexé. Importez d'abord un fichier.
+    </div>
+
+    <div *ngFor="let doc of documents"
+         class="doc-option"
+         (click)="selectDocument(doc)">
+      <span class="doc-icon-sm">▤</span>
+      <div class="doc-info-sm">
+        <span class="doc-name-sm">{{ doc.filename }}</span>
+        <span class="doc-chunks-sm">{{ doc.chunks }} chunks</span>
+      </div>
+      <span class="doc-arrow">›</span>
+    </div>
+  </div>
+
+  <!-- Chargement analyse -->
+  <div *ngIf="step === 'suggesting'" class="studio-loading">
+    <div class="loading-spinner"></div>
+    <p>Analyse du document en cours...</p>
+    <p class="loading-sub">Le LLM identifie les champs pertinents</p>
+  </div>
+
+  <!-- Confirmation des champs -->
+  <div *ngIf="step === 'confirming' && suggestion" class="studio-step">
+    <div class="step-header">
+      <span class="step-title">{{ suggestion.titre_formulaire }}</span>
+      <button class="back-btn" (click)="reset()">✕</button>
+    </div>
+
+    <p class="step-desc">{{ suggestion.description }}</p>
+    <p class="step-instruction">Sélectionnez les champs à inclure :</p>
+
+    <div class="fields-list">
+      <label *ngFor="let field of suggestion.champs"
+             class="field-option"
+             [class.selected]="isFieldSelected(field.id)">
+        <input type="checkbox"
+               [checked]="isFieldSelected(field.id)"
+               (change)="toggleField(field)">
+        <div class="field-info">
+          <span class="field-label">{{ field.label }}</span>
+          <span class="field-type">{{ field.type }}</span>
+        </div>
+        <span class="field-preview" *ngIf="field.valeur_extraite">
+          {{ field.valeur_extraite | slice:0:30 }}...
+        </span>
+      </label>
+    </div>
+
+    <div class="step-actions">
+      <span class="fields-count">{{ selectedFields.length }} champ(s) sélectionné(s)</span>
+      <button class="studio-btn primary"
+              [disabled]="selectedFields.length === 0 || isLoading"
+              (click)="confirmAndGenerate()">
+        {{ isLoading ? 'Génération...' : 'Générer le formulaire' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Visualisation du formulaire -->
+  <div *ngIf="step === 'viewing' && generatedForm">
+    <div class="step-header">
+      <span class="step-title">{{ generatedForm.titre_formulaire }}</span>
+      <button class="back-btn" (click)="step = 'idle'">✕</button>
+    </div>
+    <app-form-viewer [form]="generatedForm"></app-form-viewer>
+  </div>
+
+  <p *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</p>
+
+</div>
