@@ -8,11 +8,9 @@
         <span class="brand-sub">Assistant documentaire intelligent</span>
       </div>
     </div>
-
     <div class="header-center">
       <span class="project-name">Projet de stage — RAG multimodal</span>
     </div>
-
     <div class="header-right">
       <div class="status-pill">
         <span class="status-dot"></span>
@@ -24,11 +22,9 @@
   </header>
 
   <main class="app-main">
-
     <aside class="sidebar">
       <nav class="sidebar-nav">
         <div *ngFor="let item of navItems" class="nav-block">
-
           <button class="nav-item"
                   [class.active]="activeSection === item.id"
                   (click)="selectSection(item.id)">
@@ -38,20 +34,15 @@
               {{ documentsExpanded ? '▾' : '▸' }}
             </span>
           </button>
-
           <div class="nav-panel" *ngIf="item.id === 'documents' && documentsExpanded">
             <app-upload></app-upload>
           </div>
-
         </div>
       </nav>
-
       <div class="sidebar-actions">
-        
         <button class="action-btn primary" (click)="nouveauCorpus()">Nouveau corpus</button>
         <button class="action-btn" (click)="importer()">Importer</button>
         <button class="action-btn danger" (click)="supprimer()">Supprimer</button>
-
       </div>
     </aside>
 
@@ -59,6 +50,9 @@
       <app-chat></app-chat>
     </section>
 
+    <aside class="studio-sidebar">
+      <app-studio></app-studio>
+    </aside>
   </main>
 
 </div>
