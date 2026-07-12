@@ -226,3 +226,12 @@
   border-color: var(--bordeaux);
   &:hover { background: #fff0f0; }
 }
+.studio-sidebar {
+  width: 260px;
+  background: var(--off-white);
+  border-left: 1px solid var(--gray-mid);
+  overflow-y: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
