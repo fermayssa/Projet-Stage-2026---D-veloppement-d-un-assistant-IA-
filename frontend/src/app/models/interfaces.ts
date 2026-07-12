@@ -81,3 +81,27 @@ export interface ChatRequest {
   question: string;
   file_ids?: string[];
 }
+export interface FormField {
+  id: string;
+  label: string;
+  type: 'text' | 'number' | 'date' | 'email' | 'textarea' | 'select';
+  placeholder?: string;
+  valeur_extraite?: string;
+  obligatoire?: boolean;
+  options?: string[];
+  valeur_editee?: string;
+}
+
+export interface FormSuggestion {
+  titre_formulaire: string;
+  description: string;
+  champs: FormField[];
+}
+
+export interface GeneratedForm {
+  titre_formulaire: string;
+  description: string;
+  champs: FormField[];
+  file_id: string;
+  generated_at: string;
+}
