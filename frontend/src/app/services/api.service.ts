@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UploadResponse, ChatResponse, Document } from '../models/interfaces';
+import { UploadResponse, ChatResponse, Document, FormSuggestion } from '../models/interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -36,5 +36,18 @@ export class ApiService {
     body.file_ids = fileIds;
   }
   return this.http.post<ChatResponse>(`${this.baseUrl}/chat`, body);
+}
+suggestFormFields(fileId: string): Observable<FormSuggestion> {
+  return this.http.post<FormSuggestion>(
+    `${this.baseUrl}/forms/suggest`,
+    { file_id: fileId }
+  );
+}
+
+generateForm(fileId: string, selectedFields: any[]): Observable<any> {
+  return this.http.post<any>(
+    `${this.baseUrl}/forms/generate`,
+    { file_id: fileId, selected_fields: selectedFields }
+  );
 }
 }
