@@ -1,1 +1,46 @@
-<p>form-viewer works!</p>
+<div class="form-viewer">
+
+  <div class="form-toolbar">
+    <button class="tool-action" (click)="toggleEdit()">
+      {{ isEditing ? '✓ Terminer' : '✎ Modifier' }}
+    </button>
+    <button class="tool-action download" (click)="downloadPdf()">
+      ⬇ PDF
+    </button>
+    <button class="tool-action download" (click)="downloadJson()">
+      ⬇ JSON
+    </button>
+  </div>
+
+  <div class="form-fields">
+    <div *ngFor="let field of editableFields" class="form-row">
+      <label class="field-label-view">{{ field.label }}</label>
+
+      <ng-container *ngIf="isEditing">
+        <input *ngIf="field.type !== 'textarea' && field.type !== 'select'"
+               [type]="field.type"
+               [(ngModel)]="field.valeur_editee"
+               class="field-input"
+               [placeholder]="field.placeholder || ''">
+
+        <textarea *ngIf="field.type === 'textarea'"
+                  [(ngModel)]="field.valeur_editee"
+                  class="field-textarea"
+                  rows="3"
+                  [placeholder]="field.placeholder || ''">
+        </textarea>
+
+        <select *ngIf="field.type === 'select'"
+                [(ngModel)]="field.valeur_editee"
+                class="field-input">
+          <option *ngFor="let opt of field.options" [value]="opt">{{ opt }}</option>
+        </select>
+      </ng-container>
+
+      <div *ngIf="!isEditing" class="field-value-view">
+        {{ field.valeur_editee || field.valeur_extraite || '—' }}
+      </div>
+    </div>
+  </div>
+
+</div>
