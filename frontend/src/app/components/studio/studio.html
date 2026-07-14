@@ -77,6 +77,7 @@
     <p class="step-instruction">Sélectionnez les champs à inclure :</p>
 
     <div class="fields-list">
+      
       <label *ngFor="let field of suggestion.champs"
              class="field-option"
              [class.selected]="isFieldSelected(field.id)">
@@ -92,6 +93,56 @@
         </span>
       </label>
     </div>
+     <!-- Formulaire d'ajout manuel -->
+    <div class="add-field-form" *ngIf="showAddField">
+      <div class="add-field-title">Nouveau champ</div>
+
+      <div class="add-field-row">
+        <label class="add-label">Nom du champ *</label>
+        <input type="text"
+               [(ngModel)]="newField.label"
+               class="add-input"
+               placeholder="Ex : Date de naissance">
+      </div>
+
+      <div class="add-field-row">
+        <label class="add-label">Type</label>
+        <select [(ngModel)]="newField.type" class="add-input">
+          <option *ngFor="let t of fieldTypes" [value]="t">{{ t }}</option>
+        </select>
+      </div>
+
+      <div class="add-field-row">
+        <label class="add-label">Placeholder (optionnel)</label>
+        <input type="text"
+               [(ngModel)]="newField.placeholder"
+               class="add-input"
+               placeholder="Ex : jj/mm/aaaa">
+      </div>
+
+      <div class="add-field-row checkbox-row">
+        <input type="checkbox"
+               [(ngModel)]="newField.obligatoire"
+               id="obligatoire">
+        <label for="obligatoire" class="add-label-inline">Champ obligatoire</label>
+      </div>
+
+      <div class="add-field-actions">
+        <button class="add-cancel" (click)="cancelAddField()">Annuler</button>
+        <button class="add-confirm"
+                (click)="confirmAddField()"
+                [disabled]="!newField.label.trim()">
+          Ajouter
+        </button>
+      </div>
+    </div>
+
+    <!-- Bouton ajouter un champ -->
+    <button class="add-field-btn"
+            *ngIf="!showAddField"
+            (click)="openAddField()">
+      + Ajouter un champ manuellement
+    </button>
 
     <div class="step-actions">
       <span class="fields-count">{{ selectedFields.length }} champ(s) sélectionné(s)</span>

@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { Document, FormField, FormSuggestion, GeneratedForm } from '../../models/interfaces';
 import { FormViewerComponent } from '../form-viewer/form-viewer';
+import { FormsModule } from '@angular/forms';
 
 type StudioStep = 'idle' | 'selecting' | 'suggesting' | 'confirming' | 'viewing';
 
 @Component({
   selector: 'app-studio',
   standalone: true,
-  imports: [CommonModule, FormViewerComponent],
+  imports: [CommonModule, FormViewerComponent, FormsModule],
   templateUrl: './studio.html',
   styleUrls: ['./studio.scss']
 })
