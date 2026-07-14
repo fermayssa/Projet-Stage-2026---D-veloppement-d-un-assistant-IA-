@@ -50,4 +50,7 @@ generateForm(fileId: string, selectedFields: any[]): Observable<any> {
     { file_id: fileId, selected_fields: selectedFields }
   );
 }
+getDocumentPreview(fileId: string): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/documents/${fileId}/preview`);
+}
 }
