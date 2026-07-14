@@ -70,3 +70,92 @@
   font-style: italic;
   text-align: center;
 }
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  margin-bottom: 2px;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition);
+
+  &:hover, &.active {
+    background: #F0F4FF;
+    border-color: var(--navy);
+  }
+
+  .doc-icon  { color: #64748B; font-size: 13px; }
+  .doc-name  { flex: 1; font-size: 12px; color: var(--black-soft);
+               white-space: nowrap; overflow: hidden;
+               text-overflow: ellipsis; max-width: 110px; }
+  .doc-chunks { font-size: 10px; color: #aaa; }
+  .doc-chevron { font-size: 10px; color: #94A3B8; }
+  .delete-btn { background: none; border: none; font-size: 11px;
+                color: #aaa; cursor: pointer; padding: 2px 4px;
+                border-radius: 4px;
+                &:hover { color: var(--bordeaux); background: #FEF2F2; } }
+}
+
+.doc-preview {
+  margin: 0 4px 8px;
+  padding: 10px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.preview-loading {
+  font-size: 11px;
+  color: #94A3B8;
+  text-align: center;
+  padding: 8px;
+}
+
+.preview-meta {
+  font-size: 10px;
+  color: #94A3B8;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.preview-chunk {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-light);
+
+  &:last-child { border-bottom: none; margin-bottom: 0; }
+
+  .chunk-num {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--navy);
+    background: #EFF6FF;
+    padding: 1px 5px;
+    border-radius: 4px;
+    height: fit-content;
+    flex-shrink: 0;
+  }
+
+  .chunk-text {
+    font-size: 11px;
+    color: #64748B;
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+}
+
+.preview-error {
+  font-size: 11px;
+  color: var(--bordeaux);
+  padding: 6px;
+}
