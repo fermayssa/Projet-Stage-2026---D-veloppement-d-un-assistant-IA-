@@ -30,15 +30,49 @@
 
   <div class="documents-list" *ngIf="documents.length > 0">
     <h3>Indexés ({{ documents.length }})</h3>
-    <div class="doc-item" *ngFor="let doc of documents">
-      <span class="doc-icon">{{ doc.type === 'pdf' ? '▤' : '▥' }}</span>
-      <span class="doc-name">{{ doc.filename }}</span>
-      <span class="doc-chunks">{{ doc.chunks }} chunks</span>
-      <button class="delete-btn" (click)="deleteDocument(doc.file_id)">✕</button>
+
+    <div *ngFor="let doc of documents">
+
+      <!-- Ligne du document -->
+      <div class="doc-item"
+           [class.active]="previewDocId === doc.file_id"
+           (click)="togglePreview(doc)">
+        <span class="doc-icon">▤</span>
+        <span class="doc-name">{{ doc.filename }}</span>
+        <span class="doc-chunks">{{ doc.chunks }} chunks</span>
+        <span class="doc-chevron">{{ previewDocId === doc.file_id ? '▾' : '▸' }}</span>
+        <button class="delete-btn" (click)="deleteDocument(doc.file_id, $event)">✕</button>
+      </div>
+
+      <!-- Panneau d'aperçu -->
+      <div class="doc-preview" *ngIf="previewDocId === doc.file_id">
+
+        <div *ngIf="isLoadingPreview" class="preview-loading">
+          Chargement de l'aperçu...
+        </div>
+
+        <div *ngIf="previewData && !previewData.error">
+          <div class="preview-meta">
+            <span>{{ previewData.total_chunks }} chunks indexés</span>
+          </div>
+
+          <div *ngFor="let chunk of previewData.chunks" class="preview-chunk">
+            <span class="chunk-num">#{{ chunk.index }}</span>
+            <p class="chunk-text">{{ chunk.text }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="previewData?.error" class="preview-error">
+          {{ previewData.error }}
+        </div>
+
+      </div>
+
     </div>
   </div>
 
   <p *ngIf="documents.length === 0" class="no-docs">
     Aucun document. Importez un fichier pour commencer.
   </p>
+
 </div>
