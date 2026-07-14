@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { ChatMessage, Document } from '../../models/interfaces';
+import { ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+
+
 
 @Component({
   selector: 'app-chat',
@@ -11,7 +14,7 @@ import { ChatMessage, Document } from '../../models/interfaces';
   templateUrl: './chat.html',
   styleUrls: ['./chat.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewChecked {
 
   messages: ChatMessage[] = [];
   currentQuestion = '';
@@ -138,4 +141,11 @@ export class ChatComponent implements OnInit {
   scorePercent(score: number): number {
     return Math.round(score * 100);
   }
+  @ViewChild('messagesEnd') messagesEnd!: ElementRef;
+
+  ngAfterViewChecked() {
+    this.messagesEnd?.nativeElement?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+
 }
