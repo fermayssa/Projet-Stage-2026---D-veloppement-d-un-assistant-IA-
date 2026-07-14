@@ -25,6 +25,48 @@ export class StudioComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
 
+  // Ajouter après selectedFields
+  showAddField = false;
+  newField = {
+    label: '',
+    type: 'text' as 'text' | 'number' | 'date' | 'email' | 'textarea' | 'select',
+    placeholder: '',
+    obligatoire: false
+  };
+  fieldTypes = ['text', 'number', 'date', 'email', 'textarea', 'select'];
+
+  // Ajouter ces méthodes
+  openAddField() {
+    this.showAddField = true;
+    this.newField = { label: '', type: 'text', placeholder: '', obligatoire: false };
+    this.cdr.detectChanges();
+  }
+
+  cancelAddField() {
+    this.showAddField = false;
+    this.cdr.detectChanges();
+  }
+
+  confirmAddField() {
+    if (!this.newField.label.trim()) return;
+
+    const field: FormField = {
+      id: `custom_${Date.now()}`,
+      label: this.newField.label.trim(),
+      type: this.newField.type,
+      placeholder: this.newField.placeholder,
+      valeur_extraite: '',
+      obligatoire: this.newField.obligatoire
+    };
+
+    // Ajouter à la suggestion et à la sélection
+    this.suggestion!.champs.push(field);
+    this.selectedFields.push(field);
+    this.showAddField = false;
+    this.cdr.detectChanges();
+  }
+
+
   constructor(
     private apiService: ApiService,
     private cdr: ChangeDetectorRef
