@@ -20,6 +20,11 @@ export class UploadComponent implements OnInit {
   uploadSuccess = false;
   isDragOver = false;
 
+  // Aperçu document
+  previewDocId: string | null = null;
+  previewData: any = null;
+  isLoadingPreview = false;
+
   constructor(
     private apiService: ApiService,
     private cdr: ChangeDetectorRef
@@ -83,10 +88,45 @@ export class UploadComponent implements OnInit {
     });
   }
 
-  deleteDocument(fileId: string) {
+  deleteDocument(fileId: string, event: Event) {
+    event.stopPropagation(); // Empêche l'ouverture du preview
+    if (this.previewDocId === fileId) {
+      this.closePreview();
+    }
     this.apiService.deleteDocument(fileId).subscribe({
       next: () => this.loadDocuments(),
       error: (err) => console.error('Erreur suppression', err)
     });
+  }
+
+  togglePreview(doc: Document) {
+    if (this.previewDocId === doc.file_id) {
+      this.closePreview();
+      return;
+    }
+
+    this.previewDocId = doc.file_id;
+    this.previewData = null;
+    this.isLoadingPreview = true;
+    this.cdr.detectChanges();
+
+    this.apiService.getDocumentPreview(doc.file_id).subscribe({
+      next: (data) => {
+        this.previewData = data;
+        this.isLoadingPreview = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoadingPreview = false;
+        this.previewData = { error: 'Impossible de charger l\'aperçu' };
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  closePreview() {
+    this.previewDocId = null;
+    this.previewData = null;
+    this.cdr.detectChanges();
   }
 }
