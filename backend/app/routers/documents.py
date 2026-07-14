@@ -116,3 +116,34 @@ async def delete_document(file_id: str):
     del documents_store[file_id]
     
     return {"message": "Document supprimé", "file_id": file_id}
+@router.get("/documents/{file_id}/preview")
+async def preview_document(file_id: str):
+    """Retourne un aperçu du contenu d'un document depuis ChromaDB."""
+    import chromadb
+    
+    CHROMA_DIR = "chroma_db"
+    client = chromadb.PersistentClient(path=CHROMA_DIR)
+    collection = client.get_or_create_collection("documents")
+    
+    results = collection.get(
+        where={"file_id": file_id},
+        include=["documents", "metadatas"]
+    )
+    
+    if not results["documents"]:
+        raise HTTPException(status_code=404, detail="Document non trouvé dans la base vectorielle")
+    
+    chunks = []
+    for i, (doc, meta) in enumerate(zip(results["documents"], results["metadatas"])):
+        chunks.append({
+            "index": i + 1,
+            "text": doc[:300],
+            "metadata": meta
+        })
+    
+    return {
+        "file_id": file_id,
+        "filename": results["metadatas"][0].get("filename", "inconnu") if results["metadatas"] else "inconnu",
+        "total_chunks": len(chunks),
+        "chunks": chunks[:5]  # Afficher max 5 premiers chunks
+    }
