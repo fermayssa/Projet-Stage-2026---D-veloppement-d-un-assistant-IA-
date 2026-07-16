@@ -3,6 +3,7 @@ import chromadb
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.core import VectorStoreIndex, StorageContext, Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from app.services.templates import get_template_by_id
 import os
 import json
 from dotenv import load_dotenv
@@ -132,3 +133,73 @@ mais avec les "valeur_extraite" remplis avec les données trouvées dans le docu
         return filled_fields
     except:
         return {"champs": selected_fields}
+    
+def fill_template(file_id: str, template_id: str,
+                  custom_template: dict = None) -> dict:
+    """
+    Reçoit un document source + un template prédéfini ou custom.
+    Le LLM extrait exactement les champs du template depuis le document.
+    """
+    text = get_document_text(file_id)
+
+    if not text.strip():
+        return {"error": "Aucun texte trouvé dans ce document"}
+
+    # Charger le template
+    if custom_template:
+        template = custom_template
+    else:
+        template = get_template_by_id(template_id)
+        if not template:
+            return {"error": f"Template '{template_id}' introuvable"}
+
+    llm = setup_llm()
+
+    fields_description = "\n".join([
+        f"- {f['label']} (type: {f['type']})"
+        for f in template["champs"]
+    ])
+
+    fields_json = json.dumps(template["champs"], ensure_ascii=False, indent=2)
+
+    prompt = f"""Tu es un assistant d'extraction de données précis.
+
+Voici le document source :
+{text[:4000]}
+
+Tu dois remplir EXACTEMENT ces champs (ne crée aucun nouveau champ) :
+{fields_description}
+
+Voici le JSON des champs à compléter :
+{fields_json}
+
+INSTRUCTIONS STRICTES :
+- Remplis uniquement le champ "valeur_extraite" de chaque objet
+- Si la valeur n'est pas trouvée dans le document, laisse "valeur_extraite" vide ("")
+- Ne modifie aucun autre champ (id, label, type, etc.)
+- Réponds UNIQUEMENT avec le tableau JSON complété, sans texte avant ou après
+
+JSON complété :"""
+
+    response = llm.complete(prompt)
+    response_text = str(response).strip()
+
+    if "```json" in response_text:
+        response_text = response_text.split("```json")[1].split("```")[0].strip()
+    elif "```" in response_text:
+        response_text = response_text.split("```")[1].split("```")[0].strip()
+
+    try:
+        filled = json.loads(response_text)
+        champs = filled if isinstance(filled, list) else filled.get("champs", template["champs"])
+        return {
+            "titre_formulaire": template["nom"],
+            "description": template.get("description", ""),
+            "champs": champs
+        }
+    except:
+        return {
+            "titre_formulaire": template["nom"],
+            "description": template.get("description", ""),
+            "champs": template["champs"]
+        }    
