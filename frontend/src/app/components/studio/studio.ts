@@ -1,11 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { Document, FormField, FormSuggestion, GeneratedForm } from '../../models/interfaces';
 import { FormViewerComponent } from '../form-viewer/form-viewer';
-import { FormsModule } from '@angular/forms';
 
-type StudioStep = 'idle' | 'selecting' | 'suggesting' | 'confirming' | 'viewing';
+type StudioStep =
+  'idle' | 'selecting' | 'suggesting' | 'confirming' |
+  'viewing' | 'template-select' | 'template-doc' | 'template-filling';
 
 @Component({
   selector: 'app-studio',
@@ -26,7 +28,14 @@ export class StudioComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
 
-  // Ajouter après selectedFields
+  // Templates prédéfinis
+  availableTemplates: any[] = [];
+  selectedTemplateId: string = '';
+  selectedTemplate: any = null;
+  customTemplateJson: string = '';
+  useCustomTemplate = false;
+
+  // Ajout champ manuel
   showAddField = false;
   newField = {
     label: '',
@@ -36,38 +45,6 @@ export class StudioComponent implements OnInit {
   };
   fieldTypes = ['text', 'number', 'date', 'email', 'textarea', 'select'];
 
-  // Ajouter ces méthodes
-  openAddField() {
-    this.showAddField = true;
-    this.newField = { label: '', type: 'text', placeholder: '', obligatoire: false };
-    this.cdr.detectChanges();
-  }
-
-  cancelAddField() {
-    this.showAddField = false;
-    this.cdr.detectChanges();
-  }
-
-  confirmAddField() {
-    if (!this.newField.label.trim()) return;
-
-    const field: FormField = {
-      id: `custom_${Date.now()}`,
-      label: this.newField.label.trim(),
-      type: this.newField.type,
-      placeholder: this.newField.placeholder,
-      valeur_extraite: '',
-      obligatoire: this.newField.obligatoire
-    };
-
-    // Ajouter à la suggestion et à la sélection
-    this.suggestion!.champs.push(field);
-    this.selectedFields.push(field);
-    this.showAddField = false;
-    this.cdr.detectChanges();
-  }
-
-
   constructor(
     private apiService: ApiService,
     private cdr: ChangeDetectorRef
@@ -75,17 +52,22 @@ export class StudioComponent implements OnInit {
 
   ngOnInit() {
     this.loadDocuments();
+    this.loadTemplates();
   }
 
   loadDocuments() {
     this.apiService.getDocuments().subscribe({
-      next: (res) => {
-        this.documents = res.documents;
-        this.cdr.detectChanges();
-      }
+      next: (res) => { this.documents = res.documents; this.cdr.detectChanges(); }
     });
   }
 
+  loadTemplates() {
+    this.apiService.getTemplates().subscribe({
+      next: (res) => { this.availableTemplates = res.templates; this.cdr.detectChanges(); }
+    });
+  }
+
+  // ── Flux génération libre ──────────────────────────
   startFormGeneration() {
     this.loadDocuments();
     this.step = 'selecting';
@@ -103,12 +85,12 @@ export class StudioComponent implements OnInit {
     this.apiService.suggestFormFields(doc.file_id).subscribe({
       next: (res) => {
         this.suggestion = res;
-        this.selectedFields = res.champs.map(f => ({ ...f, selected: true }));
+        this.selectedFields = res.champs.map((f: FormField) => ({ ...f }));
         this.isLoading = false;
         this.step = 'confirming';
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: () => {
         this.isLoading = false;
         this.errorMessage = 'Erreur lors de l\'analyse du document.';
         this.step = 'idle';
@@ -119,11 +101,8 @@ export class StudioComponent implements OnInit {
 
   toggleField(field: FormField) {
     const idx = this.selectedFields.findIndex(f => f.id === field.id);
-    if (idx !== -1) {
-      this.selectedFields.splice(idx, 1);
-    } else {
-      this.selectedFields.push(field);
-    }
+    if (idx !== -1) { this.selectedFields.splice(idx, 1); }
+    else { this.selectedFields.push(field); }
     this.cdr.detectChanges();
   }
 
@@ -157,12 +136,110 @@ export class StudioComponent implements OnInit {
     });
   }
 
+  // ── Flux template prédéfini ────────────────────────
+  startTemplateFlow() {
+    this.loadDocuments();
+    this.loadTemplates();
+    this.step = 'template-select';
+    this.errorMessage = '';
+    this.useCustomTemplate = false;
+    this.customTemplateJson = '';
+    this.cdr.detectChanges();
+  }
+
+  selectTemplate(templateId: string) {
+    this.selectedTemplateId = templateId;
+    this.step = 'template-doc';
+    this.cdr.detectChanges();
+  }
+
+  selectDocumentForTemplate(doc: Document) {
+    this.selectedFileId = doc.file_id;
+    this.selectedFilename = doc.filename;
+    this.fillSelectedTemplate();
+  }
+
+  fillSelectedTemplate() {
+    this.step = 'template-filling';
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
+    let customTemplate = null;
+    if (this.useCustomTemplate && this.customTemplateJson) {
+      try {
+        customTemplate = JSON.parse(this.customTemplateJson);
+      } catch {
+        this.errorMessage = 'JSON du template invalide.';
+        this.isLoading = false;
+        this.step = 'template-select';
+        this.cdr.detectChanges();
+        return;
+      }
+    }
+
+    this.apiService.fillTemplate(
+      this.selectedFileId,
+      this.useCustomTemplate ? undefined : this.selectedTemplateId,
+      customTemplate
+    ).subscribe({
+      next: (res) => {
+        this.generatedForm = {
+          titre_formulaire: res.titre_formulaire,
+          description: res.description,
+          champs: res.champs,
+          file_id: this.selectedFileId,
+          generated_at: new Date().toISOString()
+        };
+        this.isLoading = false;
+        this.step = 'viewing';
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.errorMessage = 'Erreur lors du remplissage du template.';
+        this.step = 'idle';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // ── Champ manuel ───────────────────────────────────
+  openAddField() {
+    this.showAddField = true;
+    this.newField = { label: '', type: 'text', placeholder: '', obligatoire: false };
+    this.cdr.detectChanges();
+  }
+
+  cancelAddField() {
+    this.showAddField = false;
+    this.cdr.detectChanges();
+  }
+
+  confirmAddField() {
+    if (!this.newField.label.trim()) return;
+    const field: FormField = {
+      id: `custom_${Date.now()}`,
+      label: this.newField.label.trim(),
+      type: this.newField.type,
+      placeholder: this.newField.placeholder,
+      valeur_extraite: '',
+      obligatoire: this.newField.obligatoire
+    };
+    this.suggestion!.champs.push(field);
+    this.selectedFields.push(field);
+    this.showAddField = false;
+    this.cdr.detectChanges();
+  }
+
   reset() {
     this.step = 'idle';
     this.suggestion = null;
     this.selectedFields = [];
     this.generatedForm = null;
     this.errorMessage = '';
+    this.selectedTemplateId = '';
+    this.selectedTemplate = null;
+    this.useCustomTemplate = false;
     this.cdr.detectChanges();
   }
 }
