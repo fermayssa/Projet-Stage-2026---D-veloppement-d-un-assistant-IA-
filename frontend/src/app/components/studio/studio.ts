@@ -49,6 +49,10 @@ export class StudioComponent implements OnInit {
     private apiService: ApiService,
     private cdr: ChangeDetectorRef
   ) {}
+  useCustomTemplateAndProceed() {
+    this.step = 'template-doc';
+    this.cdr.detectChanges();
+  }
 
   ngOnInit() {
     this.loadDocuments();
