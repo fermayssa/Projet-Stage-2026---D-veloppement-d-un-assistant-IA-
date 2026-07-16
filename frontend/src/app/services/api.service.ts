@@ -53,4 +53,18 @@ generateForm(fileId: string, selectedFields: any[]): Observable<any> {
 getDocumentPreview(fileId: string): Observable<any> {
   return this.http.get<any>(`${this.baseUrl}/documents/${fileId}/preview`);
 }
+getTemplates(): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/forms/templates`);
+}
+
+getTemplate(templateId: string): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/forms/templates/${templateId}`);
+}
+
+fillTemplate(fileId: string, templateId?: string, customTemplate?: any): Observable<any> {
+  const body: any = { file_id: fileId };
+  if (templateId) body.template_id = templateId;
+  if (customTemplate) body.custom_template = customTemplate;
+  return this.http.post<any>(`${this.baseUrl}/forms/fill-template`, body);
+}
 }
