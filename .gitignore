@@ -28,3 +28,7 @@ backend/uploads/
 # Environment variables
 .env
 backend/.env
+
+# Rapport technique (fichiers personnels, ne pas versionner)
+Rapport_Technique_Vermeg_RAG.pdf
+rapport.py
