@@ -3,29 +3,29 @@
   h2 {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: var(--black-soft);
     margin-bottom: 16px;
   }
 }
 
 .drop-zone {
-  border: 2px dashed #667eea;
+  border: 2px dashed var(--navy);
   border-radius: 12px;
   padding: 32px 20px;
   text-align: center;
   cursor: pointer;
-  background: #f8f9ff;
+  background: var(--accent-soft);
   transition: all 0.2s;
 
   &:hover, &.drag-over {
-    background: #eef0ff;
-    border-color: #4c63d2;
+    background: var(--accent-soft-strong);
+    border-color: var(--bordeaux);
   }
 
   .drop-icon { font-size: 32px; margin-bottom: 8px; }
-  .drop-text { color: #555; font-size: 14px; }
-  .drop-hint { color: #aaa; font-size: 12px; margin-top: 4px; }
-  .uploading { color: #667eea; font-size: 14px; }
+  .drop-text { color: var(--text-secondary); font-size: 14px; }
+  .drop-hint { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+  .uploading { color: var(--navy); font-size: 14px; }
 }
 
 .upload-message {
@@ -34,13 +34,13 @@
   border-radius: 6px;
   font-size: 13px;
 
-  &.success { background: #d4edda; color: #155724; }
-  &.error   { background: #f8d7da; color: #721c24; }
+  &.success { background: var(--success-soft); color: var(--success-text); }
+  &.error   { background: var(--error-soft); color: var(--error-text); }
 }
 
 .documents-list {
   margin-top: 20px;
-  h3 { font-size: 13px; color: #888; margin-bottom: 10px; }
+  h3 { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
 }
 
 .doc-item {
@@ -49,23 +49,25 @@
   gap: 8px;
   padding: 8px 10px;
   margin-bottom: 6px;
-  background: #fafafa;
-  border: 1px solid #eee;
+  background: var(--surface);
+  border: 1px solid var(--gray-mid);
   border-radius: 8px;
 
-  .doc-icon  { font-size: 16px; }
-  .doc-name  { flex: 1; font-size: 13px; color: #333;
+  .doc-icon  { color: var(--text-secondary); font-size: 13px; }
+  .doc-name  { flex: 1; font-size: 12px; color: var(--black-soft);
                white-space: nowrap; overflow: hidden;
-               text-overflow: ellipsis; max-width: 140px; }
-  .doc-chunks { font-size: 11px; color: #aaa; }
-  .delete-btn { background: none; border: none;
-                cursor: pointer; font-size: 14px;
-                &:hover { opacity: 0.6; } }
+               text-overflow: ellipsis; max-width: 110px; }
+  .doc-chunks { font-size: 10px; color: var(--text-muted); }
+  .doc-chevron { font-size: 10px; color: var(--text-muted); }
+  .delete-btn { background: none; border: none; font-size: 11px;
+                color: var(--text-muted); cursor: pointer; padding: 2px 4px;
+                border-radius: 4px;
+                &:hover { color: var(--bordeaux); background: var(--danger-soft); } }
 }
 
 .no-docs {
   margin-top: 16px;
-  color: #bbb;
+  color: var(--text-muted);
   font-size: 13px;
   font-style: italic;
   text-align: center;
@@ -102,27 +104,26 @@
 .doc-preview {
   margin: 0 4px 8px;
   padding: 10px;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--surface);
+  border: 1px solid var(--gray-light);
   border-top: none;
   border-radius: 0 0 8px 8px;
 }
 
 .preview-loading {
   font-size: 11px;
-  color: #94A3B8;
+  color: var(--text-muted);
   text-align: center;
   padding: 8px;
 }
 
 .preview-meta {
-  font-size: 10px;
-  color: #94A3B8;
+    font-size: 10px;
+  color: var(--text-muted);
   margin-bottom: 8px;
   padding-bottom: 6px;
   border-bottom: 1px solid var(--gray-light);
 }
-
 .preview-chunk {
   display: flex;
   gap: 6px;
@@ -136,7 +137,7 @@
     font-size: 10px;
     font-weight: 600;
     color: var(--navy);
-    background: #EFF6FF;
+    background: var(--accent-soft-strong);
     padding: 1px 5px;
     border-radius: 4px;
     height: fit-content;
@@ -145,7 +146,7 @@
 
   .chunk-text {
     font-size: 11px;
-    color: #64748B;
+    color: var(--text-secondary);
     line-height: 1.5;
     overflow: hidden;
     display: -webkit-box;
