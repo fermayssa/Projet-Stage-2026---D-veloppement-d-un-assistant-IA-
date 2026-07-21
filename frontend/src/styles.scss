@@ -21,6 +21,7 @@ app-root {
   --radius: 10px;
   --shadow: 0 1px 2px rgba(15,23,42,0.06), 0 1px 3px rgba(15,23,42,0.04);
   --transition: 150ms ease;
+  --scrollbar-hover: #94a3b8;
 }
 
 html, body {
@@ -40,6 +41,7 @@ body {
   background: var(--off-white);
   color: var(--black-soft);
   font-size: 14px;
+  transition: background var(--transition), color var(--transition);
 }
 
 button { font-family: inherit; cursor: pointer; }
@@ -49,8 +51,23 @@ button { font-family: inherit; cursor: pointer; }
 ::-webkit-scrollbar-thumb {
   background: var(--gray-mid);
   border-radius: 3px;
-  &:hover { background: #94a3b8; }
+  ::-webkit-scrollbar-thumb {
+  background: var(--gray-mid);
+  border-radius: 3px;
+  &:hover { background: var(--scrollbar-hover); }
+}
 }
 button, span, p {
   font-variant-emoji: text;
+}
+
+[data-theme="dark"] {
+  --navy: #0B1220;
+  --bordeaux: #C4506A;
+  --off-white: #16181D;
+  --gray-light: #1F2229;
+  --gray-mid: #4B5563;
+  --black-soft: #E5E7EB;
+  --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3);
+  --scrollbar-hover: #6b7280;
 }

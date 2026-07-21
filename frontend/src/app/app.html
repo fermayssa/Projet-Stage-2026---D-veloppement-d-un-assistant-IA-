@@ -17,6 +17,11 @@
         <span>Système actif</span>
       </div>
       <button class="icon-btn" title="Paramètres">⚙</button>
+      <button class="icon-btn"
+              title="Changer de thème"
+              (click)="themeService.toggle()">
+        {{ themeService.theme() === 'light' ? '🌙' : '☀️' }}
+      </button>
       <div class="user-avatar" title="Utilisateur">M</div>
     </div>
   </header>

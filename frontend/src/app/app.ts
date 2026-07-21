@@ -4,6 +4,7 @@ import { UploadComponent } from './components/upload/upload';
 import { ChatComponent } from './components/chat/chat';
 import { StudioComponent } from './components/studio/studio';
 import { ResizableDirective } from './directives/resizable.directive';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,7 @@ import { ResizableDirective } from './directives/resizable.directive';
   styleUrls: ['./app.scss']
 })
 export class App {
+  constructor(public themeService: ThemeService) {}
   title = 'RAG Assistant';
   activeSection: string = 'documents';
   documentsExpanded = true;
