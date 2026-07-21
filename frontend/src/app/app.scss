@@ -206,13 +206,13 @@
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid var(--gray-mid);
-  background: white;
+  background: var(--surface);
   font-size: 12.5px;
   color: var(--black-soft);
   font-weight: 500;
   transition: all var(--transition);
 
-  &:hover { background: var(--gray-light); }
+  &:hover { background: var(--surface-hover); }
 
   &.primary {
     background: var(--navy);
@@ -224,7 +224,7 @@
 .action-btn.danger {
   color: var(--bordeaux);
   border-color: var(--bordeaux);
-  &:hover { background: #fff0f0; }
+  &:hover { background: var(--danger-soft); }
 }
 .studio-sidebar {
   

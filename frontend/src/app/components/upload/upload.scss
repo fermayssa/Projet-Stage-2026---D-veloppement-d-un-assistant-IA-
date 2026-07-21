@@ -52,13 +52,20 @@
   background: var(--surface);
   border: 1px solid var(--gray-mid);
   border-radius: 8px;
+  cursor: pointer;                          // ajouté
+  transition: all var(--transition);        // ajouté
+
+  &:hover, &.active {                       // ajouté
+    background: var(--accent-soft);
+    border-color: var(--navy);
+  }
 
   .doc-icon  { color: var(--text-secondary); font-size: 13px; }
   .doc-name  { flex: 1; font-size: 12px; color: var(--black-soft);
                white-space: nowrap; overflow: hidden;
                text-overflow: ellipsis; max-width: 110px; }
   .doc-chunks { font-size: 10px; color: var(--text-muted); }
-  .doc-chevron { font-size: 10px; color: var(--text-muted); }
+  .doc-chevron { font-size: 10px; color: var(--text-muted); }  // ajouté
   .delete-btn { background: none; border: none; font-size: 11px;
                 color: var(--text-muted); cursor: pointer; padding: 2px 4px;
                 border-radius: 4px;
@@ -72,34 +79,7 @@
   font-style: italic;
   text-align: center;
 }
-.doc-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
-  margin-bottom: 2px;
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all var(--transition);
 
-  &:hover, &.active {
-    background: #F0F4FF;
-    border-color: var(--navy);
-  }
-
-  .doc-icon  { color: #64748B; font-size: 13px; }
-  .doc-name  { flex: 1; font-size: 12px; color: var(--black-soft);
-               white-space: nowrap; overflow: hidden;
-               text-overflow: ellipsis; max-width: 110px; }
-  .doc-chunks { font-size: 10px; color: #aaa; }
-  .doc-chevron { font-size: 10px; color: #94A3B8; }
-  .delete-btn { background: none; border: none; font-size: 11px;
-                color: #aaa; cursor: pointer; padding: 2px 4px;
-                border-radius: 4px;
-                &:hover { color: var(--bordeaux); background: #FEF2F2; } }
-}
 
 .doc-preview {
   margin: 0 4px 8px;
