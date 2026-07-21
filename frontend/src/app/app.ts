@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { UploadComponent } from './components/upload/upload';
 import { ChatComponent } from './components/chat/chat';
 import { StudioComponent } from './components/studio/studio';
+import { ResizableDirective } from './directives/resizable.directive';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, UploadComponent, ChatComponent, StudioComponent],
+  imports: [CommonModule, UploadComponent, ChatComponent, StudioComponent, ResizableDirective],
   templateUrl: './app.html',
   styleUrls: ['./app.scss']
 })

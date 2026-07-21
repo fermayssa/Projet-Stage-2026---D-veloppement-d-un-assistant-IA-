@@ -22,7 +22,12 @@
   </header>
 
   <main class="app-main">
-    <aside class="sidebar">
+    <aside class="sidebar"
+       appResizable="right"
+       [minWidth]="220"
+       [maxWidth]="480"
+       [defaultWidth]="260"
+       storageKey="sidebar-width">
       <nav class="sidebar-nav">
         <div *ngFor="let item of navItems" class="nav-block">
           <button class="nav-item"
@@ -50,7 +55,12 @@
       <app-chat></app-chat>
     </section>
 
-    <aside class="studio-sidebar">
+    <aside class="studio-sidebar"
+       appResizable="left"
+       [minWidth]="220"
+       [maxWidth]="420"
+       [defaultWidth]="260"
+       storageKey="studio-width">
       <app-studio></app-studio>
     </aside>
   </main>
