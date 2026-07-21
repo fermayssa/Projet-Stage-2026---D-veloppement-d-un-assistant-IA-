@@ -145,14 +145,15 @@
   }
 
   .chunk-text {
-    font-size: 11px;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-  }
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;               // ← AJOUTER
+  -webkit-box-orient: vertical;
+}
 }
 
 .preview-error {

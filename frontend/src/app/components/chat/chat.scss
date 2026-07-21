@@ -203,6 +203,7 @@
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;              // ← AJOUTER
   -webkit-box-orient: vertical;
 }
 
